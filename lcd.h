@@ -17,8 +17,8 @@
 #define LCD_RS 0x01
 
 #define LCD_INIT_BYTE           0x30  // 0011 0000
-#define LCD_BUS_WIDTH_4Bit      0x20  // 0010 0000
-#define LCD_BUS_WIDTH_8Bit      0x30  // 0011 0000
+#define LCD_BUS_WIDTH_4BIT      0x20  // 0010 0000
+#define LCD_BUS_WIDTH_8BIT      0x30  // 0011 0000
 #define LCD_CLEAR               0x01  // 0000 0001
 #define LCD_HOME                0x02  // 0000 0010
 #define LCD_ON                  0x0C  // 0000 1100

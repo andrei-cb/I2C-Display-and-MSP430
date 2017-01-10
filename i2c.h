@@ -8,6 +8,6 @@
 void I2cTransmitInit(unsigned char slaveAddress);
 void I2cTransmit(unsigned char slaveAddress, unsigned char byte);
 
-void I2cNotReady();
+unsigned char I2cNotReady();
 
 #endif

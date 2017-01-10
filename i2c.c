@@ -1,6 +1,8 @@
-#include "i2c.h";
+#include "i2c.h"
+#include "msp430g2553.h"
 
-unsigned char byteToTransmit = 0;
+unsigned char byteToTransmit;
+unsigned char byteSent = 0;
 
 void I2cTransmitInit(unsigned char slaveAddress)
 {
@@ -11,31 +13,39 @@ void I2cTransmitInit(unsigned char slaveAddress)
     UCB0CTL1    = UCSSEL_2 + UCSWRST;              // Use SMCLK, keep SW reset
     UCB0BR0     = PRESCALE;                        // set prescaler
     UCB0BR1     = 0;
-    UCB0I2CSA   = slave_address;                   // Set slave address
+    UCB0I2CSA   = slaveAddress;                    // Set slave address
     UCB0CTL1   &= ~UCSWRST;                        // Clear SW reset, resume operation
     UCB0I2CIE   = UCNACKIE;
     IE2         = UCB0TXIE;                        // Enable TX ready interrupt
 }
+
 void I2cTransmit(unsigned char slaveAddress, unsigned char byte)
 {
     I2cTransmitInit(slaveAddress);
     byteToTransmit = byte;
+    byteSent = 0;
     UCB0CTL1 |= UCTR + UCTXSTT;
-
-    UCB0YXBUF = byteToTransmit;    ///testing..
 }
 
-void I2cNotReady()
+unsigned char I2cNotReady()
 {
     return (UCB0STAT & UCBBUSY);
 }
 
 #pragma vector = USCIAB0TX_VECTOR
 __interrupt void USCIAB0TX_ISR(void)
-{
-    UCB0TXBUF = byteToTransmit;
-    
-    UCB0CTL1 |= UCTXSTP;
-    IFG2 &= ~UCB0TXIFG;    //clear transmit flag
-
+{    
+    if (!(IFG2 & UCB0RXIFG))
+    {
+        if (byteSent == 1)
+        {       
+            UCB0CTL1 |= UCTXSTP;
+            IFG2 &= ~UCB0TXIFG;
+        }
+        else
+        {
+            UCB0TXBUF = byteToTransmit;
+            byteSent = 1;
+        }        
+    }
 }

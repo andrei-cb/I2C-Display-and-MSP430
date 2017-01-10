@@ -1,16 +1,19 @@
 #include "lcd.h"
 #include "ultrasonic.h"
-
+#include "stdio.h"
+#include "msp430g2553.h"
 
 int main()
 {
     WDTCTL = WDTPW + WDTHOLD; // Stop watchdog
     
+    _EINT(); // enable interrupts
+    
     UltrasonicInit(); //initialize ultrasonic module
-    LcdInit();
+    LcdInit(); // initialize LCD display
 
     float dist = 0;
-    char text[20];
+    char text[20]; // buffer
 
     while (1)
     {
